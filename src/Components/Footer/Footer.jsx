@@ -11,7 +11,7 @@ const Footer = () => {
     <div className='footer'>
         <div className="footer-logo">
             <img src={footer_logo} alt="" />
-            <p>TELAGA PS</p>
+            <p>Dapur Bunda Bahagia</p>
         </div>
         <ul className="footer-links">
             <a href='https://maps.app.goo.gl/dzYeqt6JWnb2d7Hf7' target='blank'><li>Location</li></a>

@@ -296,3 +296,283 @@
         display: grid;
     }
 }
+
+/* Perubahan */
+
+/* Payment Options Styling */
+.payment-options {
+    margin: 20px 0;
+}
+
+.payment-category {
+    margin-bottom: 25px;
+}
+
+.payment-category h4 {
+    color: #555;
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+    background-color: white;
+}
+
+.payment-option.selected {
+    border-color: #4CAF50;
+    background-color: #e8f5e9;
+    transform: scale(1.02);
+}
+
+.payment-option:hover:not(.selected) {
+    border-color: #bbb;
+    background-color: #f5f5f5;
+}
+
+.bank-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-right: 15px;
+}
+
+.bank-logo.bca {
+    background-color: #1b4e9b;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="10">BCA</text></svg>');
+}
+
+.bank-logo.bri {
+    background-color: #004b87;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="10">BRI</text></svg>');
+}
+
+.bank-logo.mandiri {
+    background-color: #00a651;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="10">M</text></svg>');
+}
+
+.cod-option {
+    display: flex;
+    align-items: center;
+}
+
+.cod-icon {
+    font-size: 30px;
+    margin-right: 15px;
+    width: 40px;
+    text-align: center;
+}
+
+.payment-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.payment-info span {
+    font-weight: 600;
+    color: #333;
+}
+
+.payment-info small {
+    color: #666;
+    font-size: 12px;
+}
+
+/* Payment Details Styling */
+.payment-details {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border-left: 4px solid #4CAF50;
+}
+
+.cod-details h4 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.cod-details p {
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.cod-instructions {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: #e3f2fd;
+    border-radius: 4px;
+}
+
+.cod-instructions h5 {
+    margin-bottom: 10px;
+    color: #1976d2;
+}
+
+.cod-instructions ol {
+    padding-left: 20px;
+    margin: 10px 0;
+}
+
+.cod-instructions li {
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.cod-note {
+    background-color: #fff8e1;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 15px 0;
+    border-left: 3px solid #ffa000;
+}
+
+.total-amount-cod {
+    font-size: 18px;
+    text-align: center;
+    padding: 15px;
+    background-color: white;
+    border-radius: 4px;
+    border: 2px dashed #4CAF50;
+}
+
+.payment-action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.confirm-payment-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    flex: 1;
+}
+
+.confirm-payment-button:hover {
+    background-color: #388E3C;
+}
+
+.cancel-payment-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    flex: 1;
+}
+
+.cancel-payment-button:hover {
+    background-color: #d32f2f;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .payment-action-buttons {
+        flex-direction: column;
+    }
+    
+    .payment-option {
+        padding: 12px;
+    }
+    
+    .bank-logo, .cod-icon {
+        width: 35px;
+        height: 35px;
+        margin-right: 12px;
+    }
+}
+
+/* Address Form Styles */
+.address-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.address-section h4 {
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+.address-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #555;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+/* Responsive adjustments for address form */
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .address-section {
+        padding: 10px;
+    }
+}

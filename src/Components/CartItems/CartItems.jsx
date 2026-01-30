@@ -6,22 +6,36 @@ import remove_icon from '../Assets/cart_cross_icon.png'
 const CartItems = () => {
     const {getTotalCartAmount, all_product, cartItems, removeFromCart, clearCart} = useContext(ShopContext);
     const [showPayment, setShowPayment] = useState(false);
-    const [selectedBank, setSelectedBank] = useState('');
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
     const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+    const [customerAddress, setCustomerAddress] = useState({
+        street: '',
+        city: '',
+        province: '',
+        postalCode: '',
+        notes: ''
+    });
     
-    // Bank account details
-    const bankAccounts = {
+    // Payment methods details
+    const paymentMethods = {
         BCA: {
+            type: 'bank',
             accountNumber: '1660339678',
-            accountName: 'Telaga PS'
+            accountName: 'Dapur Bunda Bahagia'
         },
         BRI: {
+            type: 'bank',
             accountNumber: '0987654321',
-            accountName: 'Telaga PS'
+            accountName: 'Dapur Bunda Bahagia'
         },
         Mandiri: {
+            type: 'bank',
             accountNumber: '5647382910',
-            accountName: 'Telaga PS'
+            accountName: 'Dapur Bunda Bahagia'
+        },
+        COD: {
+            type: 'cod',
+            name: 'Cash on Delivery'
         }
     };
 
@@ -29,54 +43,83 @@ const CartItems = () => {
         setShowPayment(true);
     };
 
+    const handleAddressChange = (e) => {
+        const { name, value } = e.target;
+        setCustomerAddress(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
     const handlePaymentConfirmation = async () => {
-    try {
-        // Simpan transaksi ke backend (opsional)
-        const items = all_product
-            .filter(e => cartItems[e.id] > 0)
-            .map(e => ({
-                productId: e.id,
-                name: e.name,
-                quantity: cartItems[e.id],
-                price: e.new_price
-            }));
-        
-        const transactionData = {
-            items,
-            totalAmount: getTotalCartAmount(),
-            bank: selectedBank
-        };
-        
-        // Kirim data transaksi ke backend
-        const response = await fetch('http://localhost:4000/create-transaction', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'auth-token': localStorage.getItem('auth-token')
-            },
-            body: JSON.stringify(transactionData)
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            // Clear cart and show success message
-            clearCart();
-            setPaymentConfirmed(true);
+        try {
+            if (!selectedPaymentMethod) {
+                alert('Silakan pilih metode pembayaran terlebih dahulu');
+                return;
+            }
+
+            // Validasi alamat
+            if (!customerAddress.street || !customerAddress.city || !customerAddress.province || !customerAddress.postalCode) {
+                alert('Silakan lengkapi alamat pengiriman terlebih dahulu');
+                return;
+            }
+
+            // Simpan transaksi ke backend
+            const items = all_product
+                .filter(e => cartItems[e.id] > 0)
+                .map(e => ({
+                    productId: e.id,
+                    name: e.name,
+                    quantity: cartItems[e.id],
+                    price: e.new_price
+                }));
             
-            // Reset after 5 seconds
-            setTimeout(() => {
-                setShowPayment(false);
-                setPaymentConfirmed(false);
-            }, 5000);
-        } else {
-            alert('Gagal menyimpan transaksi');
+            const transactionData = {
+                items,
+                totalAmount: getTotalCartAmount(),
+                paymentMethod: selectedPaymentMethod,
+                bank: selectedPaymentMethod === 'COD' ? 'COD' : selectedPaymentMethod,
+                address: customerAddress // Kirim data alamat
+            };
+            
+            // Kirim data transaksi ke backend
+            const response = await fetch('http://localhost:4000/create-transaction', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'auth-token': localStorage.getItem('auth-token')
+                },
+                body: JSON.stringify(transactionData)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Clear cart and show success message
+                clearCart();
+                setPaymentConfirmed(true);
+                
+                // Reset after 5 seconds
+                setTimeout(() => {
+                    setShowPayment(false);
+                    setPaymentConfirmed(false);
+                    setSelectedPaymentMethod('');
+                    setCustomerAddress({
+                        street: '',
+                        city: '',
+                        province: '',
+                        postalCode: '',
+                        notes: ''
+                    });
+                }, 5000);
+            } else {
+                alert('Gagal menyimpan transaksi');
+            }
+        } catch (error) {
+            console.error("Error confirming payment:", error);
+            alert('Terjadi kesalahan saat mengkonfirmasi pembayaran');
         }
-    } catch (error) {
-        console.error("Error confirming payment:", error);
-        alert('Terjadi kesalahan saat mengkonfirmasi pembayaran');
-    }
-};
+    };
 
     return (
         <div className='cartitems'>
@@ -140,62 +183,189 @@ const CartItems = () => {
                         <div className="payment-gateway">
                             {paymentConfirmed ? (
                                 <div className="payment-success">
-                                    <h3>Pembayaran Berhasil!</h3>
-                                    <p>Terima kasih telah berbelanja. Pesanan Anda sedang diproses.</p>
+                                    <h3>Pesanan Berhasil!</h3>
+                                    <p>
+                                        {selectedPaymentMethod === 'COD' 
+                                            ? 'Pesanan COD Anda telah diterima. Kami akan menghubungi Anda untuk proses pengiriman.'
+                                            : 'Terima kasih telah berbelanja. Pesanan Anda sedang diproses.'
+                                        }
+                                    </p>
                                 </div>
                             ) : (
                                 <>
                                     <h3>Pilih Metode Pembayaran</h3>
-                                    <div className="bank-options">
-                                        <div 
-                                            className={`bank-option ${selectedBank === 'BCA' ? 'selected' : ''}`}
-                                            onClick={() => setSelectedBank('BCA')}>
-                                            <div className="bank-logo bca"></div>
-                                            <span>BCA</span>
+                                    <div className="payment-options">
+                                        {/* Bank Transfer Options */}
+                                        <div className="payment-category">
+                                            <h4>Transfer Bank</h4>
+                                            <div className="bank-options">
+                                                <div 
+                                                    className={`payment-option ${selectedPaymentMethod === 'BCA' ? 'selected' : ''}`}
+                                                    onClick={() => setSelectedPaymentMethod('BCA')}>
+                                                    <div className="bank-logo bca"></div>
+                                                    <span>BCA</span>
+                                                </div>
+                                                <div 
+                                                    className={`payment-option ${selectedPaymentMethod === 'BRI' ? 'selected' : ''}`}
+                                                    onClick={() => setSelectedPaymentMethod('BRI')}>
+                                                    <div className="bank-logo bri"></div>
+                                                    <span>BRI</span>
+                                                </div>
+                                                <div 
+                                                    className={`payment-option ${selectedPaymentMethod === 'Mandiri' ? 'selected' : ''}`}
+                                                    onClick={() => setSelectedPaymentMethod('Mandiri')}>
+                                                    <div className="bank-logo mandiri"></div>
+                                                    <span>Mandiri</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div 
-                                            className={`bank-option ${selectedBank === 'BRI' ? 'selected' : ''}`}
-                                            onClick={() => setSelectedBank('BRI')}>
-                                            <div className="bank-logo bri"></div>
-                                            <span>BRI</span>
-                                        </div>
-                                        <div 
-                                            className={`bank-option ${selectedBank === 'Mandiri' ? 'selected' : ''}`}
-                                            onClick={() => setSelectedBank('Mandiri')}>
-                                            <div className="bank-logo mandiri"></div>
-                                            <span>Mandiri</span>
+                                        
+                                        {/* COD Option */}
+                                        <div className="payment-category">
+                                            <h4>Pembayaran di Tempat</h4>
+                                            <div 
+                                                className={`payment-option cod-option ${selectedPaymentMethod === 'COD' ? 'selected' : ''}`}
+                                                onClick={() => setSelectedPaymentMethod('COD')}>
+                                                <div className="cod-icon">💰</div>
+                                                <div className="payment-info">
+                                                    <span>Cash on Delivery (COD)</span>
+                                                    <small>Bayar ketika barang sampai</small>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     
-                                    {selectedBank && (
-                                        <div className="bank-details">
-                                            <h4>Rekening {selectedBank}</h4>
-                                            <p>Nomor Rekening: <strong>{bankAccounts[selectedBank].accountNumber}</strong></p>
-                                            <p>Atas Nama: <strong>{bankAccounts[selectedBank].accountName}</strong></p>
-                                            <p>Total Pembayaran: <strong>Rp {getTotalCartAmount().toLocaleString('id-ID')}</strong></p>
-                                            
-                                            <div className="payment-instructions">
-                                                <h5>Instruksi Pembayaran:</h5>
-                                                <ol>
-                                                    <li>Transfer tepat sejumlah total pembayaran ke rekening di atas</li>
-                                                    <li>Simpan bukti transfer</li>
-                                                    <li>Klik tombol konfirmasi di bawah setelah transfer</li>
-                                                </ol>
+                                    {selectedPaymentMethod && (
+                                        <div className="payment-details">
+                                            {/* Address Form */}
+                                            <div className="address-section">
+                                                <h4>Alamat Pengiriman</h4>
+                                                <div className="address-form">
+                                                    <div className="form-group">
+                                                        <label>Jalan dan Nomor Rumah *</label>
+                                                        <input
+                                                            type="text"
+                                                            name="street"
+                                                            value={customerAddress.street}
+                                                            onChange={handleAddressChange}
+                                                            placeholder="Contoh: Jl. Merdeka No. 123"
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div className="form-row">
+                                                        <div className="form-group">
+                                                            <label>Kota *</label>
+                                                            <input
+                                                                type="text"
+                                                                name="city"
+                                                                value={customerAddress.city}
+                                                                onChange={handleAddressChange}
+                                                                placeholder="Contoh: Bandung"
+                                                                required
+                                                            />
+                                                        </div>
+                                                        <div className="form-group">
+                                                            <label>Provinsi *</label>
+                                                            <input
+                                                                type="text"
+                                                                name="province"
+                                                                value={customerAddress.province}
+                                                                onChange={handleAddressChange}
+                                                                placeholder="Contoh: Jawa Barat"
+                                                                required
+                                                            />
+                                                        </div>
+                                                        <div className="form-group">
+                                                            <label>Kode Pos *</label>
+                                                            <input
+                                                                type="text"
+                                                                name="postalCode"
+                                                                value={customerAddress.postalCode}
+                                                                onChange={handleAddressChange}
+                                                                placeholder="Contoh: 40115"
+                                                                required
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label>Catatan untuk Kurir (Opsional)</label>
+                                                        <textarea
+                                                            name="notes"
+                                                            value={customerAddress.notes}
+                                                            onChange={handleAddressChange}
+                                                            placeholder="Contoh: Rumah warna biru, dekat sekolah"
+                                                            rows="3"
+                                                        />
+                                                    </div>
+                                                </div>
                                             </div>
+
+                                            {selectedPaymentMethod === 'COD' ? (
+                                                <div className="cod-details">
+                                                    <h4>Cash on Delivery</h4>
+                                                    <p>Pilih metode ini untuk pembayaran tunai ketika barang sudah sampai di tempat Anda.</p>
+                                                    
+                                                    <div className="cod-instructions">
+                                                        <h5>Proses COD:</h5>
+                                                        <ol>
+                                                            <li>Pesanan Anda akan diproses setelah konfirmasi</li>
+                                                            <li>Kurir akan mengantarkan pesanan ke alamat Anda</li>
+                                                            <li>Bayar tunai sejumlah total pesanan kepada kurir</li>
+                                                            <li>Barang akan diserahkan setelah pembayaran</li>
+                                                        </ol>
+                                                    </div>
+                                                    
+                                                    <div className="cod-note">
+                                                        <strong>Catatan:</strong> Pastikan Anda berada di alamat pengiriman saat kurir datang.
+                                                    </div>
+                                                    
+                                                    <p className="total-amount-cod">
+                                                        Total yang harus dibayar: <strong>Rp {getTotalCartAmount().toLocaleString('id-ID')}</strong>
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                <div className="bank-details">
+                                                    <h4>Rekening {selectedPaymentMethod}</h4>
+                                                    <p>Nomor Rekening: <strong>{paymentMethods[selectedPaymentMethod].accountNumber}</strong></p>
+                                                    <p>Atas Nama: <strong>{paymentMethods[selectedPaymentMethod].accountName}</strong></p>
+                                                    <p>Total Pembayaran: <strong>Rp {getTotalCartAmount().toLocaleString('id-ID')}</strong></p>
+                                                    
+                                                    <div className="payment-instructions">
+                                                        <h5>Instruksi Pembayaran:</h5>
+                                                        <ol>
+                                                            <li>Transfer tepat sejumlah total pembayaran ke rekening di atas</li>
+                                                            <li>Simpan bukti transfer</li>
+                                                            <li>Klik tombol konfirmasi di bawah setelah transfer</li>
+                                                        </ol>
+                                                    </div>
+                                                </div>
+                                            )}
                                             
-                                            <button 
-                                                onClick={handlePaymentConfirmation}
-                                                className="confirm-payment-button"
-                                            >
-                                                Saya Sudah Transfer
-                                            </button>
-                                            
-                                            <button 
-                                                onClick={() => setShowPayment(false)}
-                                                className="cancel-payment-button"
-                                            >
-                                                Batalkan Pembayaran
-                                            </button>
+                                            <div className="payment-action-buttons">
+                                                <button 
+                                                    onClick={handlePaymentConfirmation}
+                                                    className="confirm-payment-button"
+                                                >
+                                                    {selectedPaymentMethod === 'COD' ? 'Konfirmasi Pesanan COD' : 'Saya Sudah Transfer'}
+                                                </button>
+                                                
+                                                <button 
+                                                    onClick={() => {
+                                                        setShowPayment(false);
+                                                        setSelectedPaymentMethod('');
+                                                        setCustomerAddress({
+                                                            street: '',
+                                                            city: '',
+                                                            province: '',
+                                                            postalCode: '',
+                                                            notes: ''
+                                                        });
+                                                    }}
+                                                    className="cancel-payment-button"
+                                                >
+                                                    Batalkan Pembayaran
+                                                </button>
+                                            </div>
                                         </div>
                                     )}
                                 </>

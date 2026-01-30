@@ -31,12 +31,12 @@ const ProductDisplay = (props) => {
           <p>(122)</p>
         </div> */}
         <div className="productdisplay-right-prices">
-          <div className="productdisplay-right-price-old">Rp {product?.old_price}</div>
+          {/* <div className="productdisplay-right-price-old">Rp {product?.old_price}</div> */}
           <div className="productdisplay-right-price-new">Rp {product?.new_price}</div>
         </div>
-        <div className="productdisplay-right-description">
-          Pakan hewan berkualitas tinggi menyediakan gizi seimbang untuk kesehatan optimal dan pertumbuhan maksimal hewan peliharaan maupun ternak Anda.
-        </div>
+        {/* <div className="productdisplay-right-description">
+          
+        </div> */}
         {/* <div className="productdisplay-right-size">
           <h1>Select Size</h1>
           <div className="productdisplay-right-sizes">
@@ -49,6 +49,7 @@ const ProductDisplay = (props) => {
         </div> */}
         <button onClick={()=>{addToCart(product?.id)}}>ADD TO CART</button>
         <p className='productdisplay-right-category'><span>Category :</span> {product?.category}</p>
+        <p className='productdisplay-right-category'><span>Stok :</span> {product?.stock}</p>
       </div>
     </div>
   )

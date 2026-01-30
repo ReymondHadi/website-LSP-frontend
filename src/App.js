@@ -9,11 +9,12 @@ import LoginSignup from './Pages/LoginSignup';
 import Footer from './Components/Footer/Footer';
 import TransactionHistory from './Components/TransactionHistory/TransactionHistory';
 import About from './Components/About/About';
+import { useEffect } from "react";
 
 function App() {
 
   useEffect(() => {
-    fetch('/api/data') // Gunakan proxy di development
+    fetch(`${process.env.REACT_APP_API_URL}/api/data`)
       .then(res => res.json())
       .then(data => console.log(data));
   }, []);
@@ -24,8 +25,9 @@ function App() {
       <Navbar/>
       <Routes>
         <Route path='/' element={<Shop/>}/>
-        <Route path='/birds' element={<ShopCategory category="bird"/>}/>
-        <Route path='/cats' element={<ShopCategory category="cat"/>}/>
+        <Route path='/drinks' element={<ShopCategory category="minuman"/>}/>
+        <Route path='/foods' element={<ShopCategory category="makanan"/>}/>
+        <Route path='/appetizers' element={<ShopCategory category="appetizer"/>}/>
         <Route path="product" element={<Product/>}>
           <Route path=':productId' element={<Product/>}/>
         </Route>

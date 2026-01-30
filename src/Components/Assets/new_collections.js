@@ -24,7 +24,7 @@ let new_collections = [
   },
   {
     id: 14,
-    name: "bird Green Solid Zippered Full-Zip Slim Fit Bomber Jacket",
+    name: "minuman Green Solid Zippered Full-Zip Slim Fit Bomber Jacket",
     image: p3_img,
     new_price: 60.0,
     old_price: 100.5,
@@ -38,7 +38,7 @@ let new_collections = [
   },
   {
     id: 15,
-    name: "bird Green Solid Zippered Full-Zip Slim Fit Bomber Jacket",
+    name: "minuman Green Solid Zippered Full-Zip Slim Fit Bomber Jacket",
     image: p5_img,
     new_price: 50.0,
     old_price: 80.5,
@@ -52,7 +52,7 @@ let new_collections = [
   },
   {
     id: 17,
-    name: "bird Green Solid Zippered Full-Zip Slim Fit Bomber Jacket",
+    name: "minuman Green Solid Zippered Full-Zip Slim Fit Bomber Jacket",
     image: p7_img,
     new_price: 60.0,
     old_price: 100.5,
